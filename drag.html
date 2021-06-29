@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Drag</title>
+    <style>
+        .div {
+            width: 100px;
+            height: 100px;
+            background: red;
+            position: absolute;
+            top: 0;
+        }
+
+        .left {
+            left: 0;
+        }
+
+        .right {
+            right: 0;
+        }
+    </style>
+</head>
+<body>
+<div id="div1" class="div left">div1</div>
+<div id="div2" class="div right">div2</div>
+
+<script>
+    class Drag {
+        constructor(id) {
+            // this.oDiv = document.getElementById(id);
+            this.oDiv = document.querySelector(id);
+            this.disX = 0;
+            this.disY = 0;
+            this.init();
+        }
+
+        init() {
+            this.oDiv.onmousedown = function (ev) {
+                this.disX = ev.clientX - this.oDiv.offsetLeft;
+                this.disY = ev.clientY - this.oDiv.offsetTop;
+
+                document.onmousemove = this.fnMove.bind(this);
+                document.onmouseup = this.fnUp.bind(this);
+
+                return false; // 阻止冒泡事件，禁止选择文字，两种方式
+                // ev.preventDefault();
+            }.bind(this);
+        }
+
+        fnMove(ev) {
+            this.oDiv.style.left = ev.clientX - this.disX + 'px';
+            this.oDiv.style.top = ev.clientY - this.disY + 'px';
+        }
+
+        fnUp() {
+            document.onmousemove = null;
+            document.onmouseup = null;
+        }
+    }
+
+    class LimitDrag extends Drag {
+        fnMove(ev) {
+            super.fnMove(ev);
+            // 限制范围
+            if (this.oDiv.offsetLeft <= 0) {
+                this.oDiv.style.left = 0;
+            }
+        }
+    }
+
+    new Drag('#div1');
+    new LimitDrag('#div2');
+</script>
+</body>
+</html>
